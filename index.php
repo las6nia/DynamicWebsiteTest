@@ -12,10 +12,9 @@ $services = [
 ];
 
 $gallery = [
-  ["title" => "Modern Living Room", "details" => "Warm white + charcoal accent wall"],
-  ["title" => "Kitchen Cabinets", "details" => "Oak → matte white spray finish"],
-  ["title" => "Exterior Refresh", "details" => "Siding + trim in 2-tone gray"],
-  ["title" => "Bedroom Makeover", "details" => "Soft green + bright white trim"],
+  ["img" => "images/HouseImage.jpg", "alt" => "Freshly painted two-story house exterior", "caption" => "Two-story exterior repaint – Egg Harbor"],
+  ["img" => "DeckImage.jpg", "alt" => "Deck cleaning and staining project", "caption" => "Deck cleaning and staining – Door County"],
+  ["img" => "InteriorTrimImage.jpg", "alt" => "Interior trim and walls in a living room", "caption" => "Interior trim and walls – living room refresh"],
 ];
 
 // Helper for safe output
@@ -25,15 +24,15 @@ function e($str) {
 
 // Show success message if userInformation.php redirected back with ?sent=1
 $success = (isset($_GET["sent"]) && $_GET["sent"] === "1");
+$confirmation = $_GET["conf"] ?? ""; #confirmation number recall for customer
 
-// (Optional) show error message if redirected back with ?error=1
+// Optional error message if redirected back with ?error=1
 $errorMsg = "";
 if (isset($_GET["error"])) {
   $errorMsg = "Something went wrong. Please try again.";
 }
 
-// Keep field values if you want to repopulate them via query params (optional)
-// For now just default to empty:
+// Defaults (optional repopulation later)
 $name = "";
 $email = "";
 $phone = "";
@@ -45,148 +44,210 @@ $notes = "";
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title><?php echo e($businessName); ?> | Painting, Digital Services & More</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><?php echo e($businessName); ?> — Online Painting Quotes</title>
-  <style>
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.5;background:#0b0f17;color:#e9eefb}
-    a{color:inherit}
-    .wrap{max-width:1050px;margin:0 auto;padding:28px}
-    .hero{background:linear-gradient(135deg,rgba(77,140,255,.25),rgba(255,77,206,.15));border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:26px}
-    .top{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    .brand h1{margin:0;font-size:28px}
-    .brand p{margin:6px 0 0;color:rgba(233,238,251,.8)}
-    .cta{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{background:#4d8cff;border:none;color:#06101f;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
-    .btn.secondary{background:transparent;color:#e9eefb;border:1px solid rgba(255,255,255,.18)}
-    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:18px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    .card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:18px}
-    h2{margin:0 0 10px;font-size:18px}
-    .services{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media (max-width:700px){.services{grid-template-columns:1fr}}
-    .service{padding:14px;border-radius:14px;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.08)}
-    .service b{display:block;font-size:15px;margin-bottom:4px}
-    .muted{color:rgba(233,238,251,.75)}
-    .price{margin-top:8px;font-weight:700}
-    .gallery{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .tile{padding:14px;border-radius:14px;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.08)}
-    .form label{display:block;margin:10px 0 6px;font-weight:600}
-    .form input,.form select,.form textarea{
-      width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);
-      background:rgba(10,15,25,.7);color:#e9eefb;outline:none
-    }
-    .form textarea{min-height:90px;resize:vertical}
-    .alert{padding:12px 14px;border-radius:14px;margin:0 0 12px;border:1px solid rgba(255,255,255,.12)}
-    .alert.ok{background:rgba(60,200,120,.12)}
-    .alert.err{background:rgba(255,80,80,.12)}
-    footer{margin-top:16px;color:rgba(233,238,251,.65);font-size:13px}
-    .kpi{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-    .pill{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);font-weight:600}
-  </style>
+  <meta name="description"
+        content="<?php echo e($businessName); ?>: professional interior/exterior painting, refinishing, accent walls, and more." />
+  <link rel="stylesheet" href="style/style.css" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="hero">
-      <div class="top">
-        <div class="brand">
-          <h1><?php echo e($businessName); ?></h1>
-          <p><?php echo e($tagline); ?></p>
-          <div class="kpi">
-            <div class="pill">✅ Free quotes</div>
-            <div class="pill">🧼 Clean prep & cleanup</div>
-            <div class="pill">🎨 Color help included</div>
-          </div>
-        </div>
-        <div class="cta">
-          <a class="btn" href="#quote">Get a Free Quote</a>
-          <a class="btn secondary" href="#services">Services</a>
-          <a class="btn secondary" href="#gallery">Gallery</a>
+  <header class="site-header">
+    <div class="container nav-container">
+      <!-- LEFT: Logo -->
+      <div class="logo">
+        <img src="images/Logo.jpg" alt="<?php echo e($businessName); ?> logo" />
+      </div>
+
+      <!-- CENTER: Title -->
+      <div class="site-title">
+        <?php echo e($businessName); ?>
+      </div>
+
+      <!-- RIGHT: Nav -->
+      <nav class="main-nav">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact" class="nav-cta">Free Estimate</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <div class="hero-text">
+          <h1>Professional Painting with Clean Lines &amp; Fast Turnaround</h1>
+          <p>
+            <?php echo e($tagline); ?>
+            We deliver durable finishes, tidy job sites, and clear communication from start to final touch-up.
+          </p>
+          <a href="#contact" class="btn-primary">Get a Free Estimate</a>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="grid">
-      <div class="card" id="services">
-        <h2>Services & starting prices</h2>
-        <div class="services">
+    <!-- ABOUT -->
+    <section id="about" class="section">
+      <div class="container two-column">
+        <div>
+          <h2>About <?php echo e($businessName); ?></h2>
+          <p>
+            <?php echo e($businessName); ?> is a locally owned painting company focused on quality, reliability,
+            and clear expectations. From prep to cleanup, we treat your home like our own and stand behind our work.
+          </p>
+          <p>
+            We specialize in interior and exterior painting, cabinet refinishing, and accent walls. If you want a clean,
+            crisp finish and a smooth experience, you’re in the right place.
+          </p>
+        </div>
+
+        <div class="about-highlight">
+          <h3>Why People Choose Us</h3>
+          <ul>
+            <li>Clear, detailed estimates and communication</li>
+            <li>Respectful of your time, space, and schedule</li>
+            <li>Meticulous prep, clean lines, tidy job sites</li>
+            <li>Fast turnaround without cutting corners</li>
+            <li>Fair pricing and honest recommendations</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="section section-alt">
+      <div class="container">
+        <h2>Services &amp; Starting Prices</h2>
+
+        <div class="cards">
           <?php foreach ($services as $s): ?>
-            <div class="service">
-              <b><?php echo e($s["name"]); ?></b>
-              <div class="muted"><?php echo e($s["desc"]); ?></div>
-              <div class="price"><?php echo e($s["price"]); ?></div>
-            </div>
+            <article class="card">
+              <h3><?php echo e($s["name"]); ?></h3>
+              <p><?php echo e($s["desc"]); ?></p>
+              <p><strong><?php echo e($s["price"]); ?></strong></p>
+            </article>
           <?php endforeach; ?>
         </div>
+      </div>
+    </section>
 
-        <div style="height:14px"></div>
+    <!-- GALLERY -->
+    <section id="gallery" class="section">
+      <div class="container">
+        <h2>Project Gallery</h2>
 
-        <h2 id="gallery">Recent work (sample gallery)</h2>
-        <div class="gallery">
+        <div class="gallery-grid">
           <?php foreach ($gallery as $g): ?>
-            <div class="tile">
-              <b><?php echo e($g["title"]); ?></b>
-              <div class="muted"><?php echo e($g["details"]); ?></div>
-            </div>
+            <figure class="gallery-item">
+              <img src="<?php echo e($g["img"]); ?>" alt="<?php echo e($g["alt"]); ?>" />
+              <figcaption><?php echo e($g["caption"]); ?></figcaption>
+            </figure>
           <?php endforeach; ?>
         </div>
       </div>
+    </section>
 
-      <div class="card" id="quote">
-        <h2>Request a free quote</h2>
+    <!-- CONTACT -->
+    <section id="contact" class="section section-alt">
+      <div class="container contact-layout">
+        <div>
+          <h2>Contact &amp; Free Estimate</h2>
+          <p>
+            Tell us a little about your project. We’ll follow up to talk through options and provide a clear estimate.
+          </p>
+              <!--Confirmation-->
+                                  <?php if ($success): ?>
+                <div class="notice notice-ok">
+                  <strong>Quote request received!</strong>
 
-        <?php if ($success): ?>
-          <div class="alert ok">
-            <b>Quote request received.</b><br />
-            We’ll reach out within 1 business day.
-          </div>
-        <?php endif; ?>
+                  <div class="-box">
+                    <?php echo e($confirmation); ?>
+                  </div>
 
-        <?php if ($errorMsg !== ""): ?>
-          <div class="alert err">
-            <b><?php echo e($errorMsg); ?></b>
-          </div>
-        <?php endif; ?>
+                  <small class="form-note">
+                    Please save this number for reference.
+                  </small>
+                </div>
+              <?php endif; ?>
 
-        <form class="form" method="POST" action="userInformation.php">
-          <label for="name">Name</label>
-          <input id="name" name="name" value="<?php echo e($name); ?>" placeholder="Your full name" />
 
-          <label for="email">Email</label>
-          <input id="email" name="email" value="<?php echo e($email); ?>" placeholder="you@example.com" />
+          <?php if ($errorMsg !== ""): ?>
+            <div class="notice notice-err">
+              <strong><?php echo e($errorMsg); ?></strong>
+            </div>
+          <?php endif; ?>
 
-          <label for="phone">Phone (optional)</label>
-          <input id="phone" name="phone" value="<?php echo e($phone); ?>" placeholder="(555) 555-5555" />
+          <form class="contact-form" action="userInformation.php" method="POST">
+            <div class="form-row">
+              <label for="name">Name*</label>
+              <input id="name" name="name" type="text" required value="<?php echo e($name); ?>" />
+            </div>
 
-          <label for="service">Service</label>
-          <select id="service" name="service">
-            <option value="">Select one…</option>
-            <?php foreach ($services as $s): ?>
-              <option value="<?php echo e($s["name"]); ?>" <?php echo ($service === $s["name"]) ? "selected" : ""; ?>>
-                <?php echo e($s["name"]); ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
+            <div class="form-row">
+              <label for="email">Email*</label>
+              <input id="email" name="email" type="email" required value="<?php echo e($email); ?>" />
+            </div>
 
-          <label for="address">Job address / city</label>
-          <input id="address" name="address" value="<?php echo e($address); ?>" placeholder="Green Bay, WI" />
+            <div class="form-row">
+              <label for="phone">Phone (optional)</label>
+              <input id="phone" name="phone" type="tel" value="<?php echo e($phone); ?>" />
+            </div>
 
-          <label for="notes">Notes</label>
-          <textarea id="notes" name="notes" placeholder="Rooms, square footage, timeline, colors…"><?php echo e($notes); ?></textarea>
+            <div class="form-row">
+              <label for="service">Service</label>
+              <select id="service" name="service">
+                <option value="">Select one…</option>
+                <?php foreach ($services as $s): ?>
+                  <option value="<?php echo e($s["name"]); ?>" <?php echo ($service === $s["name"]) ? "selected" : ""; ?>>
+                    <?php echo e($s["name"]); ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
 
-          <div style="height:12px"></div>
-          <button class="btn" type="submit">Submit request</button>
-        </form>
+            <div class="form-row">
+              <label for="address">Job address / city</label>
+              <input id="address" name="address" type="text" value="<?php echo e($address); ?>" placeholder="Green Bay, WI" />
+            </div>
 
-        <footer>
-          Tip: After you launch, replace the sample gallery tiles with real project photos and add a “before/after” section.
-        </footer>
+            <div class="form-row">
+              <label for="notes">Project Details</label>
+              <textarea id="notes" name="notes" rows="4"
+                        placeholder="Rooms, square footage, timeline, colors…"><?php echo e($notes); ?></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">Send Request</button>
+
+            <p class="form-note">
+              Prefer to talk? Call or text: <strong>(608) 320-7687</strong>
+            </p>
+          </form>
+        </div>
+
+        <aside class="contact-info">
+          <h3><?php echo e($businessName); ?></h3>
+          <p>Door County &amp; Northeast Wisconsin</p>
+          <p><strong>Phone:</strong> (608) 320-7687</p>
+          <p><strong>Email:</strong> paintedhorizonsllc@icloud.com</p>
+          <p><strong>Hours:</strong> By appointment</p>
+          <p>
+            Interior • Exterior • Cabinets • Accent Walls
+          </p>
+        </aside>
       </div>
-    </div>
+    </section>
+  </main>
 
-    <footer style="margin-top:18px">
-      © <?php echo date("Y"); ?> <?php echo e($businessName); ?> — PaintedHorizons LLC
-    </footer>
-  </div>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> <?php echo e($businessName); ?>. All rights reserved.</p>
+    </div>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </footer>
 </body>
 </html>
-
