@@ -93,8 +93,4 @@ The workflow closely mirrors production service-request systems used by small bu
 - Enhanced validation and security layers
 - Deployment to a live production server
 
----
 
-## 📄 License
-
-This project is for educational and portfolio purposes.
